@@ -1,0 +1,84 @@
+select * from sales;
+
+use sales;
+
+alter table sales 
+	add column new_order_date date after order_date;
+
+set sql_safe_updates =0;
+
+
+update sales 
+set new_order_date = str_to_date(order_date, '%m/%d/%Y'); 
+
+alter table sales add column new_ship_date date after ship_date_new;
+
+update sales set new_ship_date= str_to_date(ship_date,'%m/%d/%Y');
+
+select year_new,sum(discount), sum(shipping_cost) from sales group by year_new;
+
+select sum(discount+shipping_cost) as CTC from sales;
+
+
+
+select * from sales where new_ship_date between '2011-01-01' and '2011-06-02';
+
+select now(); 
+
+select curdate();
+select current_user();
+
+select * from sales where ship_date_new > date_sub(now(), interval 1 year);
+
+select date_Sub(now(), interval 3 day) as Myday;
+
+select year(now()) as `Present year`;
+
+alter table sales add column flag_new date ;
+
+alter table sales modify column flag_new datetime;
+
+alter table sales modify column `year` date;
+select * from sales;
+alter table sales add column flag1 date after flag;
+update sales set flag1= now();
+
+alter table sales modify `year` date;
+
+alter table sales modify flag1 datetime;
+
+alter table sales add column new_oyear date after year_new;
+
+alter table sales add column new_omonth date after new_oyear;
+
+alter table sales add column new_odate date after new_omonth;
+
+update sales set new_oyear = year(ship_date);
+
+
+select year_new, avg(sales) from sales group by `year_new` ;
+
+select year_new, sum(sales) from sales group by `year_new` ;
+select year_new, max(sales) from sales group by `year_new` ;
+
+select year_new, count(quantity) from sales group by `year_new`;
+
+
+select year_new , (sales*discount)+shipping_cost as `CTC` from sales group by year_new;
+
+select order_id,discount,  if(discount>0,'yes','no') as `Discount Flag` from sales;
+
+select count(order_id),  if(discount>0,'yes','no') as `Discount Flag` from sales group by `Discount Flag`;
+
+alter table sales add column discount_flag varchar(30) after discount;
+ 
+select * from sales;
+
+
+
+select order_priority,count(order_id) from sales group by order_priority;
+
+
+
+
+
