@@ -1,0 +1,36 @@
+
+create database online_retail;
+
+use online_retail;
+
+
+create table if not exists retail (
+`invoice_no` int not null,
+`stock_code` int,
+`description` varchar(50),
+`quantity` int,
+`invoice_date` datetime,
+`unit_price` decimal,
+`customer_id` int,
+`country` varchar(20))
+
+select * from retail;
+
+load data infile 
+'D:\Online_Retail.csv'
+into table retail
+fields terminated by ','
+enclosed by '"'
+lines terminated by '\n'
+ignore 1 rows;
+
+alter table retail modify column stock_code varchar(30); 
+
+alter table retail modify `invoice_no` varchar(30);
+
+alter table retail modify column customer_id varchar(30); 
+
+alter table retail modify `invoice_date` varchar(30);
+
+select count(invoice_no)
+from retail;
