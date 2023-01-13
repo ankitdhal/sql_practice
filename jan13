@@ -1,0 +1,37 @@
+delimiter $$
+create function final_profits(profit int, discount int)
+returns int
+deterministic 
+begin
+	declare final_profit int;
+	set final_profit= profit-discount;
+	return final_profit;
+end $$
+ 
+select * from sales;
+
+select profit,discount,sales, final_profit_real(profit,discount,sales) from sales;
+
+
+delimiter $$
+create function final_profit_real(profit decimal, discount decimal(20,6), sales decimal)
+returns decimal
+Deterministic
+Begin 
+Declare final_real_profit decimal;
+set final_real_profit = profit -sales*discount;
+return final_real_profit;
+end $$
+
+delimiter $$
+create function int_to_var( x int)
+returns varchar(30)
+deterministic 
+begin
+declare y varchar(30);
+set y=x;
+return y;
+end $$
+
+
+select int_to_var(quantity) from sales;
