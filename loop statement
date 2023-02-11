@@ -1,0 +1,55 @@
+create table loop_table ( val int)
+
+delimiter $$
+create procedure insert_data()
+Begin
+set @var=10;
+generate_data :loop
+insert into loop_table values(@var);
+set @var= @var+1 ;
+if @var=100 then
+	leave generate_data;
+end if;
+end loop generate_data;
+end $$
+
+call insert_data();
+
+select * from loop_table;
+
+create table iff_even( is_even int)
+
+select * from iff_eveen;
+
+
+
+
+delimiter $$
+create procedure if_even()
+begin
+set @num =1;
+even : loop
+insert into iff_even values(@num);
+set  @num= @num+1;
+if @num%2=0 and @num=100 then
+	leave even;
+end if;
+end loop even;
+end $$
+
+delimiter $$
+create procedure if_eveen()
+begin
+set @num =1;
+even : loop
+if @num%2=0 then
+set  @num= @num+1;
+insert into iff_even values(@num);
+if @num=100 then
+	leave even;
+end if;
+end if;
+end loop even;
+end $$
+
+use sales;
