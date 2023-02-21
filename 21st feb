@@ -1,0 +1,89 @@
+create database key_prim;
+use key_prim;
+
+
+create table ninthsem(
+`course_id` int Not Null,
+`course_name` varchar(60),
+`course_status` varchar(40),
+`no_of_enroll` int,
+primary key(course_id));
+
+insert into ninthsem values(
+01, 'fsda', 'active', 1000); 
+
+select * from ninthsem;
+
+insert into ninthsem values(
+02, 'ece' , 'not active' , 250);
+
+create table student_ninthsem(
+students_id int,
+course_name varchar(50),
+student_mail varchar(60),
+student_status varchar(50),
+course_id1 int,
+foreign key(course_id1) references ninthsem(course_id));
+
+select * from student_ninthsem;
+
+insert into student_ninthsem values (
+001, 'fsda', 'aaa@gmail.com','active', 01),
+(002, 'fsda', 'bbb@gmail.com','inactive', 01),
+(003, 'dsa', 'ccc@gmail.com','active', 02);
+
+insert into student_ninthsem values (
+004, 'fsda', 'aaa1@gmail.com','inactive', 05);
+
+use key_prim;
+
+create table payment(
+course_name varchar(50),
+course_id int,
+course_status varchar(50),
+course_launch_date varchar(40),
+foreign key(course_id) references ninthsem(course_id));
+
+select * from payment;
+insert into payment values ('fsda',01,'active','20-01-2023');
+
+create table class (
+course_id int,
+class_name varchar(30),
+class_topic varchar(39),
+class_duration int,
+primary key(course_id),
+foreign key(course_id) references ninthsem(course_id));
+
+select * from class;
+
+create table tesst(
+id int not null ,
+`name` varchar(30),
+email varchar(30),
+address varchar(50),
+mobile varchar(9));
+
+alter table tesst add primary key(id,email);
+alter table tesst drop primary key;
+
+create table parent(
+id int not null,
+primary key(id));
+
+create table child(
+id int,
+parent_id int,
+foreign key(parent_id) references parent(id));
+
+drop table child;
+
+
+insert into parent values(1);
+
+delete from parent where id=1;
+
+select * from child;
+
+
+insert into child values(1,1);
