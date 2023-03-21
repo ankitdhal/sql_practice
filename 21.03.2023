@@ -1,0 +1,78 @@
+create database win_fun;
+
+use win_fun;
+
+create table ninthsem_students(student_id int,
+student_batch varchar(40),
+student_name varchar(50),
+student_stream varchar(39),
+student_marks int,
+student_email varchar(50));
+
+select * from ninthsem_students ;
+
+
+insert into ninthsem_students values(101, 'fsda','ankit','cse',100,'ankit@gmail.com');
+
+insert into ninthsem_students values
+(102, 'fsda','amit','cse',100,'amit@gmail.com'),
+(103, 'fsde','abhi','ci',80,'abhi@gmail.com'),
+(104, 'fsde','pranit','cse',90,'pranit@gmail.com'),
+(105, 'fsda','subh','me',86,'subh@gmail.com'),
+(106, 'fsds','karan','cse',70,'karan@gmail.com'),
+(107, 'fsds','mohit','ee',60,'mohit@gmail.com'),
+(108, 'fsbc','arpit','ee',78,'arpit@gmail.com'),
+(109, 'fsds','bibhu','me',77,'bibhu@gmail.com'),
+(110, 'fsds','ajay','ci',84,'ajay@gmail.com'),
+(111, 'fsds','mihir','ci',70,'mihir@gmail.com'),
+(112, 'fsde','depak','cse',89,'depak@gmail.com'),
+(113, 'fsds','lisa','ci',66,'lisa@gmail.com'),
+(114, 'fsde','nate','me',78,'nate@gmail.com'),
+(115, 'fsde','kate','me',93,'kate@gmail.com'),
+(116, 'fsbc','shelly','ee',69,'shelly@gmail.com'),
+(117, 'fsda','mark','ci',76,'mark@gmail.com'),
+(118, 'fsbc','sonam','cse',89,'sonam@gmail.com'),
+(119, 'fsbc','prince','me',69,'prince@gmail.com');
+
+select min(student_marks),student_batch
+ from ninthsem_students group by student_batch;
+
+select student_batch, sum(student_marks) from ninthsem_students group by student_batch;
+
+select max(student_marks),student_stream
+ from ninthsem_students group by student_stream;
+ 
+ select count(distinct student_batch), student_batch from ninthsem_students;
+ 
+ select student_batch,count(student_batch) from ninthsem_students group by student_batch;
+ 
+ select * from ninthsem_students order by student_batch desc;
+ 
+select student_name,student_marks from ninthsem_students where student_marks = (select max(student_marks) from ninthsem_students where student_batch='fsda');
+
+select * from ninthsem_students where student_batch= 'fsda' order by student_marks desc limit 1,2;
+ 
+select student_id, student_batch, student_stream, student_marks, 
+row_number() over(order by student_marks) as 'row_number' from ninthsem_students;
+
+select student_id, student_batch, student_stream, student_marks, 
+row_number() over(order by student_batch) as 'row_number' from ninthsem_students;
+
+select student_id,student_batch,student_stream, student_marks, 
+row_number() over (partition by student_batch order by student_marks desc) as 'row_num' 
+from ninthsem_students;
+
+select * from (select student_id,student_batch,student_stream, student_marks, 
+row_number() over (partition by student_batch order by student_marks desc) as 'row_num' 
+from ninthsem_students) as test where row_num =1;
+
+
+select * from (select student_id, student_batch, student_stream, student_marks, 
+row_number() over(partition by student_batch order by student_marks desc) as `row_num`,
+rank() over(partition by  student_batch order by student_marks desc) as `rank_number` ,
+dense_rank() over(partition by student_batch order by student_marks desc) as `dense_rank` from  ninthsem_students) as test where `dense_rank` in (1,2)  ;
+
+
+select student_id, student_batch, student_stream,student_marks, rank() over (partition by student_stream order by student_marks desc) from ninthsem_students;
+
+
