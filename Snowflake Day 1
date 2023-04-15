@@ -1,0 +1,157 @@
+"AD_NEW_DATABASE"."PUBLIC"."AD_CONSUMER_COMPLAINTS"
+
+use AD_NEW_DATABASE;
+
+create or replace file format TEST_FORMAT
+ type = csv
+ record_delimiter = '\n'
+ field_delimiter = ','
+ skip_header =1 
+ null_if =('NULL','null')
+ empty_field_as_null =  true;
+ 
+ create or replace TABLE AD_NEW_DATABASE.PUBLIC.AD_CONSUMER_COMPLAINTS (
+	DATE_RECEIVED VARCHAR(16777216),
+	PRODUCT_NAME VARCHAR(100),
+	SUB_PRODUCT VARCHAR(100),
+	ISSUE VARCHAR(100),
+	SUB_ISSUE VARCHAR(100),
+	CONSUMER_COMPLAINT_NARRATIVE VARCHAR(100),
+	COMPANY_PUBLIC_RESPONSE VARCHAR(16777216),
+	COMPANY VARCHAR(1000),
+	STATE_NAME VARCHAR(1000),
+	ZIP_CODE NUMBER(38,0),
+	TAGS VARCHAR(100),
+	CONSUMER_CONSENT_PROVIDED VARCHAR(100),
+	SUBMITTED_VIA VARCHAR(16777216),
+	DATE_SENT_TO_COMPANY VARCHAR(16777216),
+	COMPANY_RESPONSE_TO_CONSUMER VARCHAR(100),
+	TIMELY_RESPONSE VARCHAR(100),
+	CONSUMER_DISPUTED VARCHAR(100),
+	COMPLAINT_ID NUMBER(12,0) NOT NULL,
+	primary key (COMPLAINT_ID)
+);
+
+
+CREATE OR REPLACE TABLE OWNER
+(
+   "OwnerID" INTEGER NOT NULL PRIMARY KEY ,
+   "Name" VARCHAR2(20),
+   "Surname" STRING,
+   "StreetAddress" VARCHAR2(50),
+   "City" STRING,
+   "State" CHAR(4),
+   "StateFull" STRING,
+   "ZipCode" INTEGER
+);
+
+CREATE OR REPLACE TABLE PETS
+(
+    "PetID" VARCHAR(10) NOT NULL PRIMARY KEY,
+    "Name" VARCHAR(20),
+    "Kind" STRING,
+    "Gender" CHAR(7),
+    "Age" INTEGER,
+    "OwnerID" INTEGER NOT NULL REFERENCES OWNER 
+);
+
+select ownerid, name from owner
+union all
+select ownerid, name from pets;
+
+--not have pets
+select ownerid, name from owner
+except
+select ownerid, name from pets;
+
+--
+select ownerid, name from owner
+intersect
+select ownerid, name from pets;
+
+--name of the owner and their pets along with the age ---inner join
+
+select o.NAME as owner_name, p.NAME as pet_name, p.AGE as pet_age from owner o
+inner join PETS p on o.ownerID=p.ownerID;
+
+--name of all owner irrespective of having pets
+
+select o.name as owner_name, p.NAME as pet_name, p.AGE as pet_age from owner o 
+left outer join pets p on o.OwnerID = p. OwnerID;
+
+--number of pets each owner has
+select o.NAME as Owner_Name, Count(Distinct p.PetID)
+from owner o
+inner join pets p ON o.OwnerID=p.OwnerID
+Group by 1
+Order by 2 DESC;
+
+select o.name as owner_name, p.NAME as pet_name, p.AGE as pet_age from owner o 
+right  join pets p on o.OwnerID = p. OwnerID;
+
+SELECT CURRENT_DATE;
+
+
+drop table "AD_NEW_DATABASE"."PUBLIC"."AD_CONSUMER_COMPLAINTS";
+
+
+CREATE OR REPLACE TABLE AD_CONSUMER_COMPLAINTS
+  (   DATE_RECEIVED STRING ,
+      PRODUCT_NAME VARCHAR2(50) , 
+	  SUB_PRODUCT  VARCHAR2(100) , 
+	  ISSUE  VARCHAR2(100), 
+      SUB_ISSUE  VARCHAR2(100),
+      CONSUMER_COMPLAINT_NARRATIVE STRING,
+      Company_Public_Response  STRING,
+      Company VARCHAR(80),
+      State_Name CHAR(4),
+      Zip_Code STRING,
+      Tags  VARCHAR(60),
+      Consumer_Consent_Provided CHAR(20),
+       Submitted_via STRING,
+      Date_Sent_to_Company  STRING,
+     Company_Response_to_Consumer VARCHAR(80),
+     Timely_Response CHAR(4),
+     CONSUMER_DISPUTED CHAR(4),
+     COMPLAINT_ID  NUMBER(12,0) NOT NULL PRIMARY KEY
+  ) ;
+
+SELECT * FROM AD_CONSUMER_COMPLAINTS LIMIT 1000;
+
+SELECT ISSUE, PRODUCT_NAME
+FROM AD_CONSUMER_COMPLAINTS;
+
+select distinct(product_name)
+from ad_consumer_complaints;
+
+--consumer loan student loan and payday loan all above 3 into single column as loan_type and rest other as other_finance_serv
+
+SELECT *,
+    CASE 
+           WHEN PRODUCT_NAME IN ('Consumer Loan','Student loan','Payday loan') THEN 'CSP_LOAN'
+           ELSE 'OTHER_FINANCE_SERV'
+           END AS LOAN_TYPE
+FROM AD_CONSUMER_COMPLAINTS;
+
+select distinct(DATE_RECEIVED)
+from 
+AD_CONSUMER_COMPLAINTS;
+
+select distinct(substring(DATE_RECEIVED,7,12)) from AD_CONSUMER_COMPLAINTS;
+
+SELECT DISTINCT(EXTRACT(MONTH FROM (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')))) AS `EXTRACTED_YEARS`,DATE_RECEIVED FROM AD_CONSUMER_COMPLAINTS;
+
+
+---1st jan 2013-31.12.2013=PPR12
+---1.01.2014-31.1.12.2014=pr12
+---1.01.2015-31.12.2015=r12 name it as TXN_PERIOD;
+
+
+SELECT *,
+    CASE 
+    WHEN (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) >='2013-01-01' AND (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) <='2013-12-31' THEN 'PPR12_PERIOD'
+    WHEN (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) >='2014-01-01' AND (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) <='2014-12-31' THEN 'PR12_PERIOD'
+    WHEN (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) >='2015-01-01' AND (TO_DATE(DATE_RECEIVED,'DD-MM-YYYY')) <='2015-12-31' THEN 'R12_PERIOD'
+    ELSE 'INVALID'
+    END AS TXN_PERIOD
+   FROM "AD_NEW_DATABASE"."PUBLIC"."AD_CONSUMER_COMPLAINTS";
